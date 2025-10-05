@@ -25,6 +25,8 @@ function initializeTabs() {
                 updateStatistics();
             } else if (targetTab === 'history') {
                 displayGameHistory();
+            } else if (targetTab === 'analysis') {
+                updatePatternAnalysis();
             }
         });
     });
@@ -302,3 +304,305 @@ document.getElementById('winResult').addEventListener('change', function(e) {
         winAmount.focus();
     }
 });
+
+function generateSmartNumbers() {
+    const gameHistory = loadGameHistory();
+    
+    if (gameHistory.length < 3) {
+        alert('더 많은 게임 데이터가 필요합니다. (최소 3게임)');
+        return;
+    }
+    
+    const numberFreq = {};
+    const numberWeight = {};
+    
+    for (let i = 1; i <= 45; i++) {
+        numberFreq[i] = 0;
+        numberWeight[i] = 0;
+    }
+    
+    gameHistory.forEach((game, index) => {
+        const weight = (index + 1) / gameHistory.length;
+        game.numbers.forEach(num => {
+            numberFreq[num]++;
+            numberWeight[num] += weight;
+        });
+    });
+    
+    const oddEvenBalance = analyzeOddEven(gameHistory);
+    const rangeBalance = analyzeRange(gameHistory);
+    
+    const availableNumbers = [];
+    for (let i = 1; i <= 45; i++) {
+        if (!userSelectedNumbers.includes(i)) {
+            availableNumbers.push({
+                number: i,
+                frequency: numberFreq[i],
+                weight: numberWeight[i],
+                score: calculateSmartScore(i, numberFreq[i], numberWeight[i], oddEvenBalance, rangeBalance)
+            });
+        }
+    }
+    
+    availableNumbers.sort((a, b) => b.score - a.score);
+    
+    const remainingCount = 6 - userSelectedNumbers.length;
+    const smartNumbers = [];
+    
+    for (let i = 0; i < Math.min(remainingCount, availableNumbers.length); i++) {
+        smartNumbers.push(availableNumbers[i].number);
+    }
+    
+    while (smartNumbers.length < remainingCount) {
+        const randomIndex = Math.floor(Math.random() * (45 - userSelectedNumbers.length - smartNumbers.length));
+        let count = 0;
+        for (let i = 1; i <= 45; i++) {
+            if (!userSelectedNumbers.includes(i) && !smartNumbers.includes(i)) {
+                if (count === randomIndex) {
+                    smartNumbers.push(i);
+                    break;
+                }
+                count++;
+            }
+        }
+    }
+    
+    currentLottoNumbers = [...userSelectedNumbers, ...smartNumbers].sort((a, b) => a - b);
+    displaySmartNumbers();
+    
+    document.getElementById('saveSection').style.display = 'block';
+    document.getElementById('saveSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function calculateSmartScore(number, frequency, weight, oddEvenBalance, rangeBalance) {
+    let score = 0;
+    
+    score += (45 - frequency) * 2;
+    score += weight * 10;
+    
+    const isOdd = number % 2 === 1;
+    if ((isOdd && oddEvenBalance.odd < 50) || (!isOdd && oddEvenBalance.even < 50)) {
+        score += 5;
+    }
+    
+    const range = getRangeIndex(number);
+    if (rangeBalance[range] < 20) {
+        score += 3;
+    }
+    
+    score += Math.random() * 10;
+    
+    return score;
+}
+
+function getRangeIndex(number) {
+    if (number <= 10) return 0;
+    if (number <= 20) return 1;
+    if (number <= 30) return 2;
+    if (number <= 40) return 3;
+    return 4;
+}
+
+function displaySmartNumbers() {
+    const container = document.getElementById('smartNumbers');
+    container.innerHTML = '';
+    
+    currentLottoNumbers.forEach((number, index) => {
+        setTimeout(() => {
+            const ball = createNumberBall(number);
+            if (userSelectedNumbers.includes(number)) {
+                ball.style.border = '3px solid #ffd700';
+            }
+            container.appendChild(ball);
+        }, index * 150);
+    });
+}
+
+function updatePatternAnalysis() {
+    const gameHistory = loadGameHistory();
+    
+    if (gameHistory.length === 0) {
+        showEmptyAnalysis();
+        return;
+    }
+    
+    updateOddEvenAnalysis(gameHistory);
+    updateRangeAnalysis(gameHistory);
+    updateConsecutiveAnalysis(gameHistory);
+    updateSumAnalysis(gameHistory);
+    updateNumberHeatmap(gameHistory);
+}
+
+function showEmptyAnalysis() {
+    document.getElementById('oddValue').textContent = '0%';
+    document.getElementById('evenValue').textContent = '0%';
+    
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById(`range${i}Value`).textContent = '0%';
+        document.getElementById(`range${i}`).style.setProperty('--width', '0%');
+    }
+    
+    document.getElementById('consecutive2').textContent = '0회';
+    document.getElementById('consecutive3').textContent = '0회';
+    document.getElementById('consecutive4').textContent = '0회';
+    
+    document.getElementById('averageSum').textContent = '0';
+    document.getElementById('maxSum').textContent = '0';
+    document.getElementById('minSum').textContent = '0';
+    
+    document.getElementById('numberHeatmap').innerHTML = '<p style="color: #6c757d;">게임 데이터가 없습니다.</p>';
+}
+
+function analyzeOddEven(gameHistory) {
+    let oddCount = 0;
+    let evenCount = 0;
+    
+    gameHistory.forEach(game => {
+        game.numbers.forEach(num => {
+            if (num % 2 === 1) oddCount++;
+            else evenCount++;
+        });
+    });
+    
+    const total = oddCount + evenCount;
+    return {
+        odd: total > 0 ? (oddCount / total * 100) : 0,
+        even: total > 0 ? (evenCount / total * 100) : 0
+    };
+}
+
+function updateOddEvenAnalysis(gameHistory) {
+    const analysis = analyzeOddEven(gameHistory);
+    
+    document.getElementById('oddValue').textContent = `${analysis.odd.toFixed(1)}%`;
+    document.getElementById('evenValue').textContent = `${analysis.even.toFixed(1)}%`;
+}
+
+function analyzeRange(gameHistory) {
+    const ranges = [0, 0, 0, 0, 0];
+    let total = 0;
+    
+    gameHistory.forEach(game => {
+        game.numbers.forEach(num => {
+            const rangeIndex = getRangeIndex(num);
+            ranges[rangeIndex]++;
+            total++;
+        });
+    });
+    
+    return ranges.map(count => total > 0 ? (count / total * 100) : 0);
+}
+
+function updateRangeAnalysis(gameHistory) {
+    const analysis = analyzeRange(gameHistory);
+    
+    analysis.forEach((percentage, index) => {
+        const rangeElement = document.getElementById(`range${index + 1}`);
+        const valueElement = document.getElementById(`range${index + 1}Value`);
+        
+        valueElement.textContent = `${percentage.toFixed(1)}%`;
+        rangeElement.style.setProperty('--width', `${percentage}%`);
+        
+        const rangeBar = rangeElement.querySelector('::after') || rangeElement;
+        rangeBar.style.width = `${percentage}%`;
+    });
+    
+    const style = document.createElement('style');
+    analysis.forEach((percentage, index) => {
+        style.textContent += `#range${index + 1}::after { width: ${percentage}%; }`;
+    });
+    document.head.appendChild(style);
+}
+
+function updateConsecutiveAnalysis(gameHistory) {
+    let consecutive2 = 0;
+    let consecutive3 = 0;
+    let consecutive4Plus = 0;
+    
+    gameHistory.forEach(game => {
+        const sortedNumbers = [...game.numbers].sort((a, b) => a - b);
+        let consecutiveCount = 1;
+        
+        for (let i = 1; i < sortedNumbers.length; i++) {
+            if (sortedNumbers[i] === sortedNumbers[i-1] + 1) {
+                consecutiveCount++;
+            } else {
+                if (consecutiveCount >= 2) {
+                    if (consecutiveCount === 2) consecutive2++;
+                    else if (consecutiveCount === 3) consecutive3++;
+                    else consecutive4Plus++;
+                }
+                consecutiveCount = 1;
+            }
+        }
+        
+        if (consecutiveCount >= 2) {
+            if (consecutiveCount === 2) consecutive2++;
+            else if (consecutiveCount === 3) consecutive3++;
+            else consecutive4Plus++;
+        }
+    });
+    
+    document.getElementById('consecutive2').textContent = `${consecutive2}회`;
+    document.getElementById('consecutive3').textContent = `${consecutive3}회`;
+    document.getElementById('consecutive4').textContent = `${consecutive4Plus}회`;
+}
+
+function updateSumAnalysis(gameHistory) {
+    if (gameHistory.length === 0) return;
+    
+    const sums = gameHistory.map(game => 
+        game.numbers.reduce((sum, num) => sum + num, 0)
+    );
+    
+    const averageSum = sums.reduce((sum, val) => sum + val, 0) / sums.length;
+    const maxSum = Math.max(...sums);
+    const minSum = Math.min(...sums);
+    
+    document.getElementById('averageSum').textContent = averageSum.toFixed(1);
+    document.getElementById('maxSum').textContent = maxSum;
+    document.getElementById('minSum').textContent = minSum;
+}
+
+function updateNumberHeatmap(gameHistory) {
+    const numberFreq = {};
+    for (let i = 1; i <= 45; i++) {
+        numberFreq[i] = 0;
+    }
+    
+    gameHistory.forEach(game => {
+        game.numbers.forEach(num => {
+            numberFreq[num]++;
+        });
+    });
+    
+    const maxFreq = Math.max(...Object.values(numberFreq));
+    const heatmapContainer = document.getElementById('numberHeatmap');
+    heatmapContainer.innerHTML = '';
+    
+    for (let i = 1; i <= 45; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        cell.textContent = i;
+        
+        const intensity = maxFreq > 0 ? numberFreq[i] / maxFreq : 0;
+        const opacity = Math.max(0.2, intensity);
+        const hue = 240 - (intensity * 60);
+        
+        cell.style.backgroundColor = `hsla(${hue}, 70%, 50%, ${opacity})`;
+        cell.title = `번호 ${i}: ${numberFreq[i]}회 선택`;
+        
+        cell.addEventListener('click', () => {
+            if (userSelectedNumbers.length < 6 && !userSelectedNumbers.includes(i)) {
+                userSelectedNumbers.push(i);
+                userSelectedNumbers.sort((a, b) => a - b);
+                updateSelectedNumbersDisplay();
+                
+                const tab = document.querySelector('[data-tab="generator"]');
+                tab.click();
+            }
+        });
+        
+        heatmapContainer.appendChild(cell);
+    }
+}

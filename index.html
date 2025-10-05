@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로또 번호 생성기 & 관리</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="나만의 행운의 번호를 만들고 기록을 관리하세요">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="로또생성기">
+    <meta name="msapplication-TileColor" content="#667eea">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,6 +35,7 @@
             <button class="tab-btn active" data-tab="generator">번호 생성</button>
             <button class="tab-btn" data-tab="history">게임 기록</button>
             <button class="tab-btn" data-tab="statistics">통계</button>
+            <button class="tab-btn" data-tab="analysis">패턴 분석</button>
         </nav>
 
         <!-- 번호 생성 탭 -->
@@ -106,8 +125,166 @@
                 <div id="frequentNumbers" class="frequent-numbers"></div>
             </div>
         </div>
+
+        <!-- 패턴 분석 탭 -->
+        <div id="analysis" class="tab-content">
+            <div class="analysis-container">
+                <div class="pattern-section">
+                    <h3>🎯 스마트 번호 추천</h3>
+                    <div class="smart-recommendation">
+                        <button onclick="generateSmartNumbers()" class="smart-btn">AI 추천 번호 생성</button>
+                        <div id="smartNumbers" class="smart-numbers"></div>
+                        <p class="recommendation-note">과거 패턴과 확률을 분석하여 추천합니다</p>
+                    </div>
+                </div>
+
+                <div class="pattern-analysis">
+                    <h3>📊 번호 패턴 분석</h3>
+                    
+                    <div class="pattern-grid">
+                        <div class="pattern-card">
+                            <h4>홀짝 분포</h4>
+                            <div id="oddEvenChart" class="chart-container">
+                                <div class="chart-bar">
+                                    <div class="bar odd-bar" id="oddBar">
+                                        <span class="bar-label">홀수</span>
+                                        <span class="bar-value" id="oddValue">0%</span>
+                                    </div>
+                                    <div class="bar even-bar" id="evenBar">
+                                        <span class="bar-label">짝수</span>
+                                        <span class="bar-value" id="evenValue">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pattern-card">
+                            <h4>구간별 분포</h4>
+                            <div id="rangeChart" class="chart-container">
+                                <div class="range-bars">
+                                    <div class="range-item">
+                                        <span>1-10</span>
+                                        <div class="range-bar" id="range1"></div>
+                                        <span id="range1Value">0%</span>
+                                    </div>
+                                    <div class="range-item">
+                                        <span>11-20</span>
+                                        <div class="range-bar" id="range2"></div>
+                                        <span id="range2Value">0%</span>
+                                    </div>
+                                    <div class="range-item">
+                                        <span>21-30</span>
+                                        <div class="range-bar" id="range3"></div>
+                                        <span id="range3Value">0%</span>
+                                    </div>
+                                    <div class="range-item">
+                                        <span>31-40</span>
+                                        <div class="range-bar" id="range4"></div>
+                                        <span id="range4Value">0%</span>
+                                    </div>
+                                    <div class="range-item">
+                                        <span>41-45</span>
+                                        <div class="range-bar" id="range5"></div>
+                                        <span id="range5Value">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pattern-card">
+                            <h4>연속 번호</h4>
+                            <div class="consecutive-analysis">
+                                <div class="consecutive-stat">
+                                    <span class="stat-label">연속 2개:</span>
+                                    <span id="consecutive2" class="stat-value">0회</span>
+                                </div>
+                                <div class="consecutive-stat">
+                                    <span class="stat-label">연속 3개:</span>
+                                    <span id="consecutive3" class="stat-value">0회</span>
+                                </div>
+                                <div class="consecutive-stat">
+                                    <span class="stat-label">연속 4개+:</span>
+                                    <span id="consecutive4" class="stat-value">0회</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pattern-card">
+                            <h4>합계 분석</h4>
+                            <div class="sum-analysis">
+                                <div class="sum-stat">
+                                    <span class="stat-label">평균 합계:</span>
+                                    <span id="averageSum" class="stat-value">0</span>
+                                </div>
+                                <div class="sum-stat">
+                                    <span class="stat-label">최고 합계:</span>
+                                    <span id="maxSum" class="stat-value">0</span>
+                                </div>
+                                <div class="sum-stat">
+                                    <span class="stat-label">최저 합계:</span>
+                                    <span id="minSum" class="stat-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="heatmap-section">
+                    <h3>🔥 번호 히트맵</h3>
+                    <div class="heatmap-container">
+                        <div id="numberHeatmap" class="number-heatmap"></div>
+                        <div class="heatmap-legend">
+                            <span>낮음</span>
+                            <div class="legend-gradient"></div>
+                            <span>높음</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW 등록 성공:', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW 등록 실패:', registrationError);
+                    });
+            });
+        }
+
+        // PWA 설치 프롬프트
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const installButton = document.createElement('button');
+            installButton.textContent = '앱으로 설치';
+            installButton.className = 'install-btn';
+            installButton.onclick = () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('사용자가 앱 설치를 승인했습니다');
+                        }
+                        deferredPrompt = null;
+                        installButton.remove();
+                    });
+                }
+            };
+            document.querySelector('header').appendChild(installButton);
+        }
+    </script>
 </body>
 </html>
