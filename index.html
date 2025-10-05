@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 번호 생성기 & 관리</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎰 로또 번호 생성기</h1>
+            <p>나만의 행운의 번호를 만들어보세요!</p>
+        </header>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="generator">번호 생성</button>
+            <button class="tab-btn" data-tab="history">게임 기록</button>
+            <button class="tab-btn" data-tab="statistics">통계</button>
+        </nav>
+
+        <!-- 번호 생성 탭 -->
+        <div id="generator" class="tab-content active">
+            <div class="input-section">
+                <h3>원하는 번호가 있나요?</h3>
+                <div class="number-input-container">
+                    <input type="number" id="userNumbers" min="1" max="45" placeholder="1-45 사이 번호 입력">
+                    <button onclick="addUserNumber()">추가</button>
+                </div>
+                <div class="selected-numbers">
+                    <p>선택된 번호:</p>
+                    <div id="selectedNumbers" class="number-display"></div>
+                    <button onclick="clearUserNumbers()" class="clear-btn">초기화</button>
+                </div>
+            </div>
+
+            <div class="generate-section">
+                <button onclick="generateLotto()" class="generate-btn">로또 번호 생성!</button>
+                <div id="generatedNumbers" class="lotto-numbers"></div>
+            </div>
+
+            <div class="save-section" id="saveSection" style="display: none;">
+                <h3>게임 결과 저장</h3>
+                <div class="save-form">
+                    <label>게임 회차:</label>
+                    <input type="number" id="gameRound" placeholder="예: 1095">
+                    
+                    <label>당첨 결과:</label>
+                    <select id="winResult">
+                        <option value="꽝">꽝</option>
+                        <option value="5등">5등 (3개 일치)</option>
+                        <option value="4등">4등 (4개 일치)</option>
+                        <option value="3등">3등 (5개 일치)</option>
+                        <option value="2등">2등 (5개 일치 + 보너스)</option>
+                        <option value="1등">1등 (6개 일치)</option>
+                    </select>
+                    
+                    <label>당첨 금액:</label>
+                    <input type="number" id="winAmount" placeholder="당첨 금액 (원)">
+                    
+                    <button onclick="saveGame()" class="save-btn">저장하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게임 기록 탭 -->
+        <div id="history" class="tab-content">
+            <div class="history-header">
+                <h3>게임 기록</h3>
+                <button onclick="clearHistory()" class="clear-history-btn">전체 삭제</button>
+            </div>
+            <div id="gameHistory" class="history-list"></div>
+        </div>
+
+        <!-- 통계 탭 -->
+        <div id="statistics" class="tab-content">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h4>총 게임 수</h4>
+                    <span id="totalGames">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>총 투자 금액</h4>
+                    <span id="totalInvestment">0원</span>
+                </div>
+                <div class="stat-card">
+                    <h4>총 당첨 금액</h4>
+                    <span id="totalWinnings">0원</span>
+                </div>
+                <div class="stat-card">
+                    <h4>수익률</h4>
+                    <span id="profitRate">0%</span>
+                </div>
+                <div class="stat-card">
+                    <h4>최고 당첨</h4>
+                    <span id="bestWin">-</span>
+                </div>
+                <div class="stat-card">
+                    <h4>당첨 횟수</h4>
+                    <span id="winCount">0회</span>
+                </div>
+            </div>
+            
+            <div class="number-frequency">
+                <h4>자주 선택한 번호</h4>
+                <div id="frequentNumbers" class="frequent-numbers"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
