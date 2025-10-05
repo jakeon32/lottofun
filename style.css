@@ -8,8 +8,9 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 20px;
+    padding: 10px;
     color: #333;
+    margin: 0;
 }
 
 .container {
@@ -25,18 +26,19 @@ header {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     color: white;
     text-align: center;
-    padding: 30px;
+    padding: 20px 20px 15px 20px;
 }
 
 header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    font-size: 2.2em;
+    margin-bottom: 5px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 header p {
-    font-size: 1.1em;
+    font-size: 1em;
     opacity: 0.9;
+    margin: 0;
 }
 
 .tab-nav {
@@ -47,11 +49,11 @@ header p {
 
 .tab-btn {
     flex: 1;
-    padding: 15px 20px;
+    padding: 12px 15px;
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 600;
     color: #6c757d;
     transition: all 0.3s ease;
@@ -71,7 +73,7 @@ header p {
 
 .tab-content {
     display: none;
-    padding: 30px;
+    padding: 20px;
 }
 
 .tab-content.active {
@@ -81,17 +83,17 @@ header p {
 .input-section {
     background: #f8f9fa;
     border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 30px;
+    padding: 15px;
+    margin-bottom: 20px;
 }
 
 .selection-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
 }
 
 .selection-header h3 {
@@ -119,38 +121,38 @@ header p {
 .number-grid-container {
     background: white;
     border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 15px;
+    margin-bottom: 12px;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .number-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-    gap: 8px;
-    max-width: 600px;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
 .grid-number {
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 3px solid #e9ecef;
+    border: 2px solid #e9ecef;
     background: linear-gradient(145deg, #ffffff, #f1f3f4);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 1em;
+    font-size: 0.9em;
     color: #495057;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     user-select: none;
-    min-height: 50px;
+    min-height: 42px;
     box-shadow: 
-        0 2px 4px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
@@ -345,7 +347,7 @@ header p {
 
 .generate-section {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .generate-btn {
@@ -916,28 +918,39 @@ header p {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+    
     .container {
-        margin: 10px;
+        margin: 0;
         border-radius: 15px;
     }
     
     header {
-        padding: 20px;
+        padding: 15px;
         position: relative;
     }
     
     header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 3px;
+    }
+    
+    header p {
+        font-size: 0.9em;
     }
     
     .install-btn {
         position: static;
-        margin-top: 15px;
+        margin-top: 10px;
         width: auto;
+        padding: 6px 12px;
+        font-size: 0.8em;
     }
     
     .tab-content {
-        padding: 20px;
+        padding: 15px;
     }
     
     .tab-nav {
@@ -947,13 +960,25 @@ header p {
     
     .tab-btn {
         flex: none;
-        min-width: 80px;
+        min-width: 70px;
+        padding: 10px 12px;
+        font-size: 0.85em;
+    }
+    
+    .input-section {
+        padding: 12px;
+        margin-bottom: 15px;
     }
     
     .selection-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .selection-header h3 {
+        font-size: 1em;
     }
     
     .selection-info {
@@ -962,49 +987,69 @@ header p {
     }
     
     .number-grid {
-        grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
-        gap: 6px;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 4px;
     }
     
     .grid-number {
-        min-height: 45px;
-        font-size: 0.9em;
+        min-height: 36px;
+        font-size: 0.8em;
+        border-width: 1px;
     }
     
     .number-grid-container {
-        padding: 15px;
+        padding: 12px;
+        margin-bottom: 10px;
     }
     
     .selected-numbers {
         flex-direction: column;
         align-items: flex-start;
+        margin-top: 8px;
+    }
+    
+    .selected-numbers p {
+        font-size: 0.9em;
+        margin-bottom: 5px;
+    }
+    
+    .generate-section {
+        margin-bottom: 15px;
+    }
+    
+    .generate-btn {
+        padding: 12px 30px;
+        font-size: 1.1em;
     }
     
     .lotto-numbers {
-        gap: 10px;
+        gap: 8px;
+        margin-top: 15px;
     }
     
     .lotto-numbers .number-ball {
-        width: 50px;
-        height: 50px;
-        font-size: 1em;
+        width: 45px;
+        height: 45px;
+        font-size: 0.95em;
     }
     
     .stats-container {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .pattern-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .number-heatmap {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 3px;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 2px;
     }
     
     .heatmap-cell {
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
     
     .history-header-info {
@@ -1017,5 +1062,101 @@ header p {
         flex-direction: column;
         align-items: flex-start;
         gap: 5px;
+    }
+    
+    .max-selection-alert {
+        padding: 15px 20px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 3px;
+    }
+    
+    header h1 {
+        font-size: 1.6em;
+    }
+    
+    .tab-btn {
+        min-width: 60px;
+        padding: 8px 10px;
+        font-size: 0.8em;
+    }
+    
+    .input-section {
+        padding: 10px;
+    }
+    
+    .number-grid {
+        gap: 3px;
+    }
+    
+    .grid-number {
+        min-height: 32px;
+        font-size: 0.75em;
+    }
+    
+    .number-grid-container {
+        padding: 10px;
+    }
+    
+    .generate-btn {
+        padding: 10px 25px;
+        font-size: 1em;
+    }
+    
+    .lotto-numbers .number-ball {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9em;
+    }
+    
+    #selectionCount {
+        padding: 6px 12px;
+        font-size: 0.8em;
+    }
+    
+    .clear-btn {
+        padding: 6px 12px;
+        font-size: 0.8em;
+    }
+}
+
+@media (max-height: 700px) and (max-width: 768px) {
+    header {
+        padding: 12px;
+    }
+    
+    header h1 {
+        font-size: 1.6em;
+        margin-bottom: 2px;
+    }
+    
+    header p {
+        font-size: 0.85em;
+    }
+    
+    .tab-content {
+        padding: 12px;
+    }
+    
+    .input-section {
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .grid-number {
+        min-height: 30px;
+        font-size: 0.75em;
+    }
+    
+    .generate-section {
+        margin-bottom: 12px;
+    }
+    
+    .lotto-numbers {
+        margin-top: 10px;
     }
 }
