@@ -85,9 +85,150 @@ header p {
     margin-bottom: 30px;
 }
 
-.input-section h3 {
-    margin-bottom: 15px;
+.selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.selection-header h3 {
+    margin: 0;
     color: #495057;
+    font-size: 1.1em;
+}
+
+.selection-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#selectionCount {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.number-grid-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.number-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.grid-number {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid #e9ecef;
+    background: linear-gradient(145deg, #ffffff, #f1f3f4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    min-height: 50px;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.grid-number::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: rotate(-45deg);
+    opacity: 0.7;
+}
+
+.grid-number:hover {
+    transform: translateY(-3px) scale(1.05);
+    border-color: #007bff;
+    box-shadow: 
+        0 8px 16px rgba(0, 123, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    background: linear-gradient(145deg, #f8f9ff, #e3f2fd);
+}
+
+.grid-number.selected {
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    color: white;
+    border-color: #5a6fd8;
+    transform: translateY(-2px) scale(1.1);
+    box-shadow: 
+        0 6px 20px rgba(102, 126, 234, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: selectBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.grid-number.selected::before {
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, transparent 70%);
+}
+
+.grid-number.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.grid-number.disabled:hover {
+    border-color: #e9ecef;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #ffffff, #f1f3f4);
+}
+
+@keyframes selectBounce {
+    0% {
+        transform: translateY(-2px) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1.2);
+    }
+    100% {
+        transform: translateY(-2px) scale(1.1);
+    }
+}
+
+@keyframes deselectBounce {
+    0% {
+        transform: translateY(-2px) scale(1.1);
+    }
+    50% {
+        transform: translateY(2px) scale(0.9);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+.grid-number.deselecting {
+    animation: deselectBounce 0.3s ease-out;
 }
 
 .number-input-container {
@@ -731,6 +872,49 @@ header p {
     border-radius: 8px;
 }
 
+.max-selection-alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 1.1em;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.max-selection-alert.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.grid-number.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
 @media (max-width: 768px) {
     .container {
         margin: 10px;
@@ -766,8 +950,29 @@ header p {
         min-width: 80px;
     }
     
-    .number-input-container {
+    .selection-header {
         flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .selection-info {
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .number-grid {
+        grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+        gap: 6px;
+    }
+    
+    .grid-number {
+        min-height: 45px;
+        font-size: 0.9em;
+    }
+    
+    .number-grid-container {
+        padding: 15px;
     }
     
     .selected-numbers {

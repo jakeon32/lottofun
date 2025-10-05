@@ -41,15 +41,21 @@
         <!-- 번호 생성 탭 -->
         <div id="generator" class="tab-content active">
             <div class="input-section">
-                <h3>원하는 번호가 있나요?</h3>
-                <div class="number-input-container">
-                    <input type="number" id="userNumbers" min="1" max="45" placeholder="1-45 사이 번호 입력">
-                    <button onclick="addUserNumber()">추가</button>
+                <div class="selection-header">
+                    <h3>🎱 번호를 선택해주세요 (최대 6개)</h3>
+                    <div class="selection-info">
+                        <span id="selectionCount">0/6</span>
+                        <button onclick="clearUserNumbers()" class="clear-btn">전체 초기화</button>
+                    </div>
                 </div>
+                
+                <div class="number-grid-container">
+                    <div id="numberGrid" class="number-grid"></div>
+                </div>
+                
                 <div class="selected-numbers">
                     <p>선택된 번호:</p>
                     <div id="selectedNumbers" class="number-display"></div>
-                    <button onclick="clearUserNumbers()" class="clear-btn">초기화</button>
                 </div>
             </div>
 

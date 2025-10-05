@@ -3,6 +3,7 @@ let currentLottoNumbers = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
+    initializeNumberGrid();
     loadGameHistory();
     updateStatistics();
 });
@@ -32,30 +33,119 @@ function initializeTabs() {
     });
 }
 
-function addUserNumber() {
-    const input = document.getElementById('userNumbers');
-    const number = parseInt(input.value);
+function initializeNumberGrid() {
+    const grid = document.getElementById('numberGrid');
+    grid.innerHTML = '';
     
-    if (!number || number < 1 || number > 45) {
-        alert('1부터 45까지의 숫자를 입력해주세요.');
-        return;
+    for (let i = 1; i <= 45; i++) {
+        const numberElement = document.createElement('div');
+        numberElement.className = 'grid-number';
+        numberElement.textContent = i;
+        numberElement.dataset.number = i;
+        
+        numberElement.addEventListener('click', () => toggleNumberSelection(i));
+        
+        // 터치 이벤트 추가 (모바일 최적화)
+        numberElement.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            numberElement.style.transform = 'translateY(-1px) scale(1.02)';
+        });
+        
+        numberElement.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            setTimeout(() => {
+                if (!numberElement.classList.contains('selected')) {
+                    numberElement.style.transform = '';
+                }
+            }, 100);
+            toggleNumberSelection(i);
+        });
+        
+        grid.appendChild(numberElement);
     }
+    
+    updateSelectionCount();
+}
+
+function toggleNumberSelection(number) {
+    const numberElement = document.querySelector(`[data-number="${number}"]`);
     
     if (userSelectedNumbers.includes(number)) {
-        alert('이미 선택된 번호입니다.');
-        return;
+        // 번호 선택 해제
+        numberElement.classList.add('deselecting');
+        setTimeout(() => {
+            numberElement.classList.remove('selected', 'deselecting');
+            userSelectedNumbers = userSelectedNumbers.filter(n => n !== number);
+            updateSelectedNumbersDisplay();
+            updateSelectionCount();
+            updateGridState();
+        }, 150);
+    } else {
+        // 번호 선택
+        if (userSelectedNumbers.length >= 6) {
+            showMaxSelectionAlert();
+            return;
+        }
+        
+        userSelectedNumbers.push(number);
+        userSelectedNumbers.sort((a, b) => a - b);
+        numberElement.classList.add('selected');
+        updateSelectedNumbersDisplay();
+        updateSelectionCount();
+        updateGridState();
     }
+}
+
+function updateGridState() {
+    const gridNumbers = document.querySelectorAll('.grid-number');
+    const maxReached = userSelectedNumbers.length >= 6;
     
-    if (userSelectedNumbers.length >= 6) {
-        alert('최대 6개까지만 선택할 수 있습니다.');
-        return;
+    gridNumbers.forEach(element => {
+        const number = parseInt(element.dataset.number);
+        const isSelected = userSelectedNumbers.includes(number);
+        
+        if (maxReached && !isSelected) {
+            element.classList.add('disabled');
+        } else {
+            element.classList.remove('disabled');
+        }
+    });
+}
+
+function updateSelectionCount() {
+    const countElement = document.getElementById('selectionCount');
+    countElement.textContent = `${userSelectedNumbers.length}/6`;
+    
+    if (userSelectedNumbers.length === 6) {
+        countElement.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        countElement.style.animation = 'pulse 1s ease-in-out';
+    } else {
+        countElement.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+        countElement.style.animation = '';
     }
+}
+
+function showMaxSelectionAlert() {
+    const alertElement = document.createElement('div');
+    alertElement.className = 'max-selection-alert';
+    alertElement.textContent = '최대 6개까지만 선택할 수 있습니다!';
     
-    userSelectedNumbers.push(number);
-    userSelectedNumbers.sort((a, b) => a - b);
-    updateSelectedNumbersDisplay();
-    input.value = '';
-    input.focus();
+    document.body.appendChild(alertElement);
+    
+    setTimeout(() => {
+        alertElement.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        alertElement.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(alertElement);
+        }, 300);
+    }, 2000);
+}
+
+function addUserNumber() {
+    // 이 함수는 더 이상 사용되지 않습니다 (그래픽 UI로 대체됨)
 }
 
 function updateSelectedNumbersDisplay() {
@@ -86,8 +176,25 @@ function removeUserNumber(number) {
 }
 
 function clearUserNumbers() {
-    userSelectedNumbers = [];
-    updateSelectedNumbersDisplay();
+    // 그리드에서 선택된 번호들 시각적으로 제거
+    const selectedElements = document.querySelectorAll('.grid-number.selected');
+    
+    selectedElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.add('deselecting');
+            setTimeout(() => {
+                element.classList.remove('selected', 'deselecting');
+            }, 150);
+        }, index * 50);
+    });
+    
+    // 데이터 초기화
+    setTimeout(() => {
+        userSelectedNumbers = [];
+        updateSelectedNumbersDisplay();
+        updateSelectionCount();
+        updateGridState();
+    }, selectedElements.length * 50 + 150);
 }
 
 function generateLotto() {
@@ -159,6 +266,8 @@ function saveGame() {
     currentLottoNumbers = [];
     userSelectedNumbers = [];
     updateSelectedNumbersDisplay();
+    updateSelectionCount();
+    updateGridState();
     document.getElementById('generatedNumbers').innerHTML = '';
     
     alert('게임이 저장되었습니다!');
@@ -275,12 +384,6 @@ function updateFrequentNumbers(gameHistory) {
         container.appendChild(frequentItem);
     });
 }
-
-document.getElementById('userNumbers').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        addUserNumber();
-    }
-});
 
 document.getElementById('gameRound').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
