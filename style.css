@@ -406,7 +406,21 @@ header p {
 
 .save-section h3 {
     color: #155724;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+}
+
+.save-info {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.save-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #155724;
 }
 
 .save-form {
@@ -540,6 +554,105 @@ header p {
 .win-amount {
     font-weight: bold;
     color: #28a745;
+}
+
+.pending-status {
+    background: #fff3cd;
+    color: #856404;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.result-input-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.result-input-btn:hover {
+    background: #0056b3;
+}
+
+.result-form {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.result-form h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 1em;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.form-row label {
+    min-width: 80px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9em;
+}
+
+.form-row select,
+.form-row input {
+    flex: 1;
+    min-width: 120px;
+    padding: 6px 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.submit-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: #218838;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #545b62;
 }
 
 .stats-container {
