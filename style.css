@@ -383,6 +383,112 @@ header p {
     animation: bounceIn 0.6s ease;
 }
 
+.lotto-set {
+    margin-top: 20px;
+}
+
+.omr-card {
+    background: white;
+    border: 3px solid #007bff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.omr-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.omr-header h3 {
+    margin: 0 0 5px 0;
+    color: #007bff;
+    font-size: 1.3em;
+}
+
+.omr-header p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.games-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.game-row {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.game-row:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.game-label {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #007bff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.game-numbers {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.game-numbers .number-ball {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.game-numbers .user-selected {
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+}
+
+.omr-footer {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 2px solid #e9ecef;
+    color: #495057;
+}
+
+.omr-footer p {
+    margin: 5px 0;
+}
+
+.omr-footer strong {
+    color: #007bff;
+    font-size: 1.1em;
+}
+
 @keyframes bounceIn {
     0% {
         transform: scale(0);
@@ -653,6 +759,172 @@ header p {
 
 .cancel-btn:hover {
     background: #545b62;
+}
+
+.game-set-display {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.mini-game-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.mini-game-row:last-child {
+    margin-bottom: 0;
+}
+
+.mini-game-label {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8em;
+    flex-shrink: 0;
+}
+
+.mini-game-numbers {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.mini-number-ball {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.7em;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mini-number-ball.user-selected {
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.3);
+}
+
+.mini-game-result {
+    min-width: 50px;
+    text-align: center;
+}
+
+.mini-result {
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.mini-result.win {
+    background: #d4edda;
+    color: #155724;
+}
+
+.mini-result.lose {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.mini-pending {
+    font-size: 0.7em;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.cost-info {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-right: 10px;
+}
+
+.game-result-row {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: white;
+}
+
+.game-result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.game-label-small {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.7em;
+    flex-shrink: 0;
+}
+
+.game-numbers-small {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+}
+
+.number-small {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.65em;
+    color: white;
+}
+
+.game-result-inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.mini-select {
+    flex: 1;
+    padding: 4px 6px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.8em;
+    min-width: 80px;
+}
+
+.mini-input {
+    flex: 1;
+    padding: 4px 6px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.8em;
+    min-width: 80px;
 }
 
 .stats-container {

@@ -60,8 +60,44 @@
             </div>
 
             <div class="generate-section">
-                <button onclick="generateLotto()" class="generate-btn">로또 번호 생성!</button>
-                <div id="generatedNumbers" class="lotto-numbers"></div>
+                <button onclick="generateLottoSet()" class="generate-btn">5게임 세트 생성! (A~E)</button>
+                
+                <div id="lottoSet" class="lotto-set" style="display: none;">
+                    <div class="omr-card">
+                        <div class="omr-header">
+                            <h3>🎫 로또 OMR 카드</h3>
+                            <p>선택한 번호가 포함된 5게임 조합</p>
+                        </div>
+                        
+                        <div class="games-container">
+                            <div class="game-row" data-game="A">
+                                <span class="game-label">A</span>
+                                <div class="game-numbers" id="gameA"></div>
+                            </div>
+                            <div class="game-row" data-game="B">
+                                <span class="game-label">B</span>
+                                <div class="game-numbers" id="gameB"></div>
+                            </div>
+                            <div class="game-row" data-game="C">
+                                <span class="game-label">C</span>
+                                <div class="game-numbers" id="gameC"></div>
+                            </div>
+                            <div class="game-row" data-game="D">
+                                <span class="game-label">D</span>
+                                <div class="game-numbers" id="gameD"></div>
+                            </div>
+                            <div class="game-row" data-game="E">
+                                <span class="game-label">E</span>
+                                <div class="game-numbers" id="gameE"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="omr-footer">
+                            <p><strong>총 비용: 5,000원</strong> (1게임당 1,000원)</p>
+                            <p>💡 선택한 번호: <span id="selectedNumbersInSet"></span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="save-section" id="saveSection" style="display: none;">

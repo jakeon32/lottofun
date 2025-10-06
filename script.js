@@ -1,5 +1,6 @@
 let userSelectedNumbers = [];
 let currentLottoNumbers = [];
+let currentGameSet = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
@@ -201,7 +202,31 @@ function clearUserNumbers() {
     }, selectedElements.length * 50 + 150);
 }
 
-function generateLotto() {
+function generateLottoSet() {
+    if (userSelectedNumbers.length === 0) {
+        alert('최소 1개 이상의 번호를 선택해주세요!');
+        return;
+    }
+    
+    currentGameSet = [];
+    const games = ['A', 'B', 'C', 'D', 'E'];
+    
+    games.forEach(gameLetter => {
+        const gameNumbers = generateSingleGame();
+        currentGameSet.push({
+            game: gameLetter,
+            numbers: gameNumbers,
+            userNumbers: [...userSelectedNumbers]
+        });
+    });
+    
+    displayGameSet();
+    document.getElementById('lottoSet').style.display = 'block';
+    document.getElementById('saveSection').style.display = 'block';
+    document.getElementById('saveSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateSingleGame() {
     const availableNumbers = [];
     for (let i = 1; i <= 45; i++) {
         if (!userSelectedNumbers.includes(i)) {
@@ -212,29 +237,52 @@ function generateLotto() {
     const remainingCount = 6 - userSelectedNumbers.length;
     const randomNumbers = [];
     
+    // 매번 새로운 랜덤 조합 생성
+    const shuffledAvailable = [...availableNumbers].sort(() => Math.random() - 0.5);
+    
     for (let i = 0; i < remainingCount; i++) {
-        const randomIndex = Math.floor(Math.random() * availableNumbers.length);
-        const selectedNumber = availableNumbers.splice(randomIndex, 1)[0];
-        randomNumbers.push(selectedNumber);
+        if (shuffledAvailable.length > 0) {
+            const randomIndex = Math.floor(Math.random() * shuffledAvailable.length);
+            const selectedNumber = shuffledAvailable.splice(randomIndex, 1)[0];
+            randomNumbers.push(selectedNumber);
+        }
     }
     
-    currentLottoNumbers = [...userSelectedNumbers, ...randomNumbers].sort((a, b) => a - b);
-    displayLottoNumbers();
+    return [...userSelectedNumbers, ...randomNumbers].sort((a, b) => a - b);
+}
+
+function displayGameSet() {
+    const games = ['A', 'B', 'C', 'D', 'E'];
     
-    document.getElementById('saveSection').style.display = 'block';
-    document.getElementById('saveSection').scrollIntoView({ behavior: 'smooth' });
+    games.forEach((gameLetter, index) => {
+        setTimeout(() => {
+            const container = document.getElementById(`game${gameLetter}`);
+            container.innerHTML = '';
+            
+            const gameData = currentGameSet[index];
+            gameData.numbers.forEach(number => {
+                const ball = createNumberBall(number);
+                if (userSelectedNumbers.includes(number)) {
+                    ball.classList.add('user-selected');
+                }
+                container.appendChild(ball);
+            });
+        }, index * 300);
+    });
+    
+    // 선택된 번호 표시
+    document.getElementById('selectedNumbersInSet').textContent = 
+        userSelectedNumbers.length > 0 ? userSelectedNumbers.join(', ') : '없음';
+}
+
+function generateLotto() {
+    // 하위 호환성을 위해 유지 (스마트 번호 생성에서 사용)
+    generateLottoSet();
 }
 
 function displayLottoNumbers() {
-    const container = document.getElementById('generatedNumbers');
-    container.innerHTML = '';
-    
-    currentLottoNumbers.forEach((number, index) => {
-        setTimeout(() => {
-            const ball = createNumberBall(number);
-            container.appendChild(ball);
-        }, index * 200);
-    });
+    // 하위 호환성을 위해 유지
+    displayGameSet();
 }
 
 function savePendingGame() {
@@ -246,35 +294,42 @@ function savePendingGame() {
         return;
     }
     
-    const game = {
+    if (currentGameSet.length === 0) {
+        alert('먼저 5게임 세트를 생성해주세요.');
+        return;
+    }
+    
+    const gameSetData = {
         id: Date.now(),
         round: parseInt(gameRound),
-        numbers: [...currentLottoNumbers],
+        gameSet: currentGameSet,
         userNumbers: [...userSelectedNumbers],
-        result: null, // 아직 결과 없음
-        amount: 0,
-        cost: 1000,
+        results: {}, // A~E 각 게임별 결과
+        totalAmount: 0,
+        cost: 5000, // 5게임 × 1000원
         date: purchaseDate || new Date().toLocaleDateString('ko-KR'),
         purchaseDate: purchaseDate || new Date().toLocaleDateString('ko-KR'),
-        status: 'pending' // 결과 대기 상태
+        status: 'pending',
+        type: 'set' // 5게임 세트 구분
     };
     
     let gameHistory = JSON.parse(localStorage.getItem('lottoHistory') || '[]');
-    gameHistory.push(game);
+    gameHistory.push(gameSetData);
     localStorage.setItem('lottoHistory', JSON.stringify(gameHistory));
     
     document.getElementById('gameRound').value = '';
     document.getElementById('purchaseDate').value = '';
     document.getElementById('saveSection').style.display = 'none';
+    document.getElementById('lottoSet').style.display = 'none';
     
+    currentGameSet = [];
     currentLottoNumbers = [];
     userSelectedNumbers = [];
     updateSelectedNumbersDisplay();
     updateSelectionCount();
     updateGridState();
-    document.getElementById('generatedNumbers').innerHTML = '';
     
-    alert('게임이 저장되었습니다! 추첨 후 "게임 기록"에서 결과를 입력하세요.');
+    alert('5게임 세트가 저장되었습니다! (총 5,000원)\n추첨 후 "게임 기록"에서 결과를 입력하세요.');
     updateStatistics();
 }
 
@@ -299,32 +354,78 @@ function displayGameHistory() {
     
     gameHistory.reverse().forEach(game => {
         const gameElement = document.createElement('div');
-        const isPending = game.status === 'pending' || game.result === null;
-        const hasResult = game.result && game.result !== null;
+        const isGameSet = game.type === 'set' && game.gameSet;
+        const isPending = game.status === 'pending';
         
-        gameElement.className = `history-item ${hasResult && game.result !== '꽝' ? 'win' : ''}`;
-        
-        gameElement.innerHTML = `
-            <div class="history-header-info">
-                <span class="round-info">${game.round}회차</span>
-                <span class="date-info">${game.date}</span>
-            </div>
-            <div class="history-numbers">
-                ${game.numbers.map(num => {
-                    const isUserSelected = game.userNumbers.includes(num);
-                    return `<div class="number-ball ${isUserSelected ? 'user-selected' : ''}" style="background: ${getNumberColor(num)}; ${isUserSelected ? 'border: 3px solid #ffd700;' : ''}">${num}</div>`;
-                }).join('')}
-            </div>
-            <div class="history-result">
-                ${isPending ? 
-                    `<span class="pending-status">결과 대기</span>
-                     <button class="result-input-btn" onclick="showResultForm(${game.id})">결과 입력</button>` :
-                    `<span class="win-status ${game.result !== '꽝' ? 'win' : 'lose'}">${game.result}</span>
-                     <span class="win-amount">${game.amount.toLocaleString()}원</span>`
-                }
-            </div>
-            ${isPending ? `<div id="result-form-${game.id}" style="display: none;"></div>` : ''}
-        `;
+        if (isGameSet) {
+            // 5게임 세트 표시
+            const hasAnyResult = game.results && Object.keys(game.results).length > 0;
+            const totalWinnings = hasAnyResult ? Object.values(game.results).reduce((sum, result) => sum + (result.amount || 0), 0) : 0;
+            
+            gameElement.className = `history-item ${totalWinnings > 0 ? 'win' : ''}`;
+            
+            gameElement.innerHTML = `
+                <div class="history-header-info">
+                    <span class="round-info">${game.round}회차 (5게임 세트)</span>
+                    <span class="date-info">${game.date}</span>
+                </div>
+                <div class="game-set-display">
+                    ${game.gameSet.map(gameData => `
+                        <div class="mini-game-row">
+                            <span class="mini-game-label">${gameData.game}</span>
+                            <div class="mini-game-numbers">
+                                ${gameData.numbers.map(num => {
+                                    const isUserSelected = game.userNumbers.includes(num);
+                                    return `<div class="mini-number-ball ${isUserSelected ? 'user-selected' : ''}" style="background: ${getNumberColor(num)};">${num}</div>`;
+                                }).join('')}
+                            </div>
+                            <div class="mini-game-result">
+                                ${game.results[gameData.game] ? 
+                                    `<span class="mini-result ${game.results[gameData.game].result !== '꽝' ? 'win' : 'lose'}">${game.results[gameData.game].result}</span>` :
+                                    '<span class="mini-pending">대기</span>'
+                                }
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="history-result">
+                    <span class="cost-info">비용: ${game.cost.toLocaleString()}원</span>
+                    ${isPending ? 
+                        `<span class="pending-status">결과 대기</span>
+                         <button class="result-input-btn" onclick="showGameSetResultForm(${game.id})">결과 입력</button>` :
+                        `<span class="win-amount">총 당첨: ${totalWinnings.toLocaleString()}원</span>`
+                    }
+                </div>
+                ${isPending ? `<div id="result-form-${game.id}" style="display: none;"></div>` : ''}
+            `;
+        } else {
+            // 기존 단일 게임 표시 (하위 호환성)
+            const hasResult = game.result && game.result !== null;
+            
+            gameElement.className = `history-item ${hasResult && game.result !== '꽝' ? 'win' : ''}`;
+            
+            gameElement.innerHTML = `
+                <div class="history-header-info">
+                    <span class="round-info">${game.round}회차</span>
+                    <span class="date-info">${game.date}</span>
+                </div>
+                <div class="history-numbers">
+                    ${(game.numbers || []).map(num => {
+                        const isUserSelected = (game.userNumbers || []).includes(num);
+                        return `<div class="number-ball ${isUserSelected ? 'user-selected' : ''}" style="background: ${getNumberColor(num)}; ${isUserSelected ? 'border: 3px solid #ffd700;' : ''}">${num}</div>`;
+                    }).join('')}
+                </div>
+                <div class="history-result">
+                    ${isPending ? 
+                        `<span class="pending-status">결과 대기</span>
+                         <button class="result-input-btn" onclick="showResultForm(${game.id})">결과 입력</button>` :
+                        `<span class="win-status ${game.result !== '꽝' ? 'win' : 'lose'}">${game.result}</span>
+                         <span class="win-amount">${(game.amount || 0).toLocaleString()}원</span>`
+                    }
+                </div>
+                ${isPending ? `<div id="result-form-${game.id}" style="display: none;"></div>` : ''}
+            `;
+        }
         
         container.appendChild(gameElement);
     });
@@ -417,15 +518,149 @@ function submitResult(gameId) {
     }
 }
 
+function showGameSetResultForm(gameId) {
+    const formContainer = document.getElementById(`result-form-${gameId}`);
+    
+    if (formContainer.style.display === 'none') {
+        formContainer.style.display = 'block';
+        
+        let gameHistory = JSON.parse(localStorage.getItem('lottoHistory') || '[]');
+        const game = gameHistory.find(g => g.id === gameId);
+        
+        if (!game || !game.gameSet) return;
+        
+        formContainer.innerHTML = `
+            <div class="result-form">
+                <h4>🎯 5게임 세트 결과 입력</h4>
+                ${game.gameSet.map(gameData => `
+                    <div class="game-result-row">
+                        <div class="game-result-header">
+                            <span class="game-label-small">${gameData.game}</span>
+                            <div class="game-numbers-small">
+                                ${gameData.numbers.map(num => 
+                                    `<span class="number-small" style="background: ${getNumberColor(num)};">${num}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="game-result-inputs">
+                            <select id="result-${gameId}-${gameData.game}" class="mini-select">
+                                <option value="꽝">꽝</option>
+                                <option value="5등">5등</option>
+                                <option value="4등">4등</option>
+                                <option value="3등">3등</option>
+                                <option value="2등">2등</option>
+                                <option value="1등">1등</option>
+                            </select>
+                            <input type="number" id="amount-${gameId}-${gameData.game}" 
+                                   placeholder="금액" class="mini-input">
+                        </div>
+                    </div>
+                `).join('')}
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="hideResultForm(${gameId})">취소</button>
+                    <button class="submit-btn" onclick="submitGameSetResult(${gameId})">모두 저장</button>
+                </div>
+            </div>
+        `;
+        
+        // 각 게임별 결과 변경 시 금액 자동 설정
+        game.gameSet.forEach(gameData => {
+            document.getElementById(`result-${gameId}-${gameData.game}`).addEventListener('change', function(e) {
+                const amountInput = document.getElementById(`amount-${gameId}-${gameData.game}`);
+                if (e.target.value === '꽝') {
+                    amountInput.value = '0';
+                } else {
+                    amountInput.focus();
+                }
+            });
+        });
+    } else {
+        hideResultForm(gameId);
+    }
+}
+
+function submitGameSetResult(gameId) {
+    let gameHistory = JSON.parse(localStorage.getItem('lottoHistory') || '[]');
+    const gameIndex = gameHistory.findIndex(game => game.id === gameId);
+    
+    if (gameIndex === -1) return;
+    
+    const game = gameHistory[gameIndex];
+    const results = {};
+    let totalAmount = 0;
+    let winCount = 0;
+    
+    game.gameSet.forEach(gameData => {
+        const result = document.getElementById(`result-${gameId}-${gameData.game}`).value;
+        const amount = parseInt(document.getElementById(`amount-${gameId}-${gameData.game}`).value) || 0;
+        
+        results[gameData.game] = { result, amount };
+        totalAmount += amount;
+        
+        if (result !== '꽝') {
+            winCount++;
+        }
+    });
+    
+    gameHistory[gameIndex].results = results;
+    gameHistory[gameIndex].totalAmount = totalAmount;
+    gameHistory[gameIndex].status = 'completed';
+    
+    localStorage.setItem('lottoHistory', JSON.stringify(gameHistory));
+    
+    displayGameHistory();
+    updateStatistics();
+    
+    if (winCount > 0) {
+        alert(`🎉 축하합니다! 5게임 중 ${winCount}게임 당첨!\n총 당첨금: ${totalAmount.toLocaleString()}원`);
+    } else {
+        alert('모든 결과가 저장되었습니다.');
+    }
+}
+
 function updateStatistics() {
     const gameHistory = loadGameHistory();
     
     const totalGames = gameHistory.length;
-    const totalInvestment = totalGames * 1000;
-    const totalWinnings = gameHistory.reduce((sum, game) => sum + (game.amount || 0), 0);
+    let totalInvestment = 0;
+    let totalWinnings = 0;
+    let winCount = 0;
+    let bestWin = 0;
+    
+    gameHistory.forEach(game => {
+        // 투자 금액 계산
+        totalInvestment += game.cost || (game.type === 'set' ? 5000 : 1000);
+        
+        // 당첨 금액 계산
+        if (game.type === 'set' && game.results) {
+            // 5게임 세트의 경우
+            const setWinnings = Object.values(game.results).reduce((sum, result) => sum + (result.amount || 0), 0);
+            totalWinnings += setWinnings;
+            
+            // 당첨 게임 수 계산 (5게임 중 당첨된 게임)
+            const setWinCount = Object.values(game.results).filter(result => result.result && result.result !== '꽝').length;
+            winCount += setWinCount;
+            
+            // 최고 당첨 업데이트
+            if (setWinnings > bestWin) {
+                bestWin = setWinnings;
+            }
+        } else {
+            // 기존 단일 게임의 경우
+            const gameWinnings = game.amount || 0;
+            totalWinnings += gameWinnings;
+            
+            if (game.result && game.result !== '꽝' && game.result !== null) {
+                winCount++;
+            }
+            
+            if (gameWinnings > bestWin) {
+                bestWin = gameWinnings;
+            }
+        }
+    });
+    
     const profitRate = totalInvestment > 0 ? ((totalWinnings - totalInvestment) / totalInvestment * 100).toFixed(1) : 0;
-    const winCount = gameHistory.filter(game => game.result && game.result !== '꽝' && game.result !== null).length;
-    const bestWin = gameHistory.length > 0 ? Math.max(...gameHistory.map(game => game.amount || 0)) : 0;
     
     document.getElementById('totalGames').textContent = totalGames;
     document.getElementById('totalInvestment').textContent = totalInvestment.toLocaleString() + '원';
