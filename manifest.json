@@ -2,7 +2,7 @@
   "name": "로또 번호 생성기",
   "short_name": "로또생성기",
   "description": "나만의 행운의 번호를 만들고 기록을 관리하세요",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",

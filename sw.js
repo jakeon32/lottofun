@@ -1,10 +1,17 @@
-const CACHE_NAME = 'lotto-generator-v1.0.0';
+const CACHE_NAME = 'lotto-generator-v1.1.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json'
+  './',
+  './index.html',
+  './style.css',
+  './js/app.js',
+  './js/state.js',
+  './js/storage.js',
+  './js/generator.js',
+  './js/ui.js',
+  './js/utils.js',
+  './js/history.js',
+  './js/statistics.js',
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -24,7 +31,12 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        return fetch(event.request).catch(() => {
+          // 네트워크 실패 시 index.html 반환 (SPA 라우팅 대응)
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
       }
     )
   );
